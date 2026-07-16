@@ -552,5 +552,317 @@ fill:"forwards"
 });
 
 /*==================================================
+            TYPEWRITER EFFECT
+==================================================*/
+
+const letterParagraphs = document.querySelectorAll(".letter p");
+
+letterParagraphs.forEach(p => {
+
+    const text = p.innerHTML;
+
+    p.innerHTML = "";
+
+    p.dataset.text = text;
+
+});
+
+let letterStarted = false;
+
+function startLetterAnimation(){
+
+    if(letterStarted) return;
+
+    letterStarted = true;
+
+    let delay = 0;
+
+    letterParagraphs.forEach(paragraph=>{
+
+        setTimeout(()=>{
+
+            typeParagraph(paragraph);
+
+        },delay);
+
+        delay += 1500;
+
+    });
+
+}
+
+function typeParagraph(element){
+
+    const text = element.dataset.text;
+
+    let i = 0;
+
+    const interval = setInterval(()=>{
+
+        element.innerHTML = text.slice(0,i);
+
+        i++;
+
+        if(i > text.length){
+
+            clearInterval(interval);
+
+        }
+
+    },18);
+
+}
+
+const letterSection = document.getElementById("letter");
+
+const letterObserver = new IntersectionObserver(entries=>{
+
+    entries.forEach(entry=>{
+
+        if(entry.isIntersecting){
+
+            startLetterAnimation();
+
+        }
+
+    });
+
+},{threshold:.4});
+
+letterObserver.observe(letterSection);
+
+/*==================================================
+            DAYS TOGETHER
+==================================================*/
+
+const togetherDate = new Date("2025-01-01");
+
+const counter = document.createElement("div");
+
+counter.id = "loveCounter";
+
+document.body.appendChild(counter);
+
+function updateCounter(){
+
+    const now = new Date();
+
+    const diff = now - togetherDate;
+
+    const days = Math.floor(diff/1000/60/60/24);
+
+    counter.innerHTML =
+
+    `❤️ Together for ${days} beautiful days ❤️`;
+
+}
+
+updateCounter();
+
+setInterval(updateCounter,60000);
+
+/*==================================================
+            STAR BACKGROUND
+==================================================*/
+
+for(let i=0;i<80;i++){
+
+    const star=document.createElement("div");
+
+    star.style.position="fixed";
+
+    star.style.width="2px";
+
+    star.style.height="2px";
+
+    star.style.borderRadius="50%";
+
+    star.style.background="white";
+
+    star.style.left=Math.random()*100+"vw";
+
+    star.style.top=Math.random()*100+"vh";
+
+    star.style.opacity=Math.random();
+
+    star.style.pointerEvents="none";
+
+    star.style.zIndex="-2";
+
+    star.animate([
+
+        {opacity:.2},
+
+        {opacity:1},
+
+        {opacity:.2}
+
+    ],{
+
+        duration:1500+Math.random()*3000,
+
+        iterations:Infinity
+
+    });
+
+    document.body.appendChild(star);
+
+}
+
+/*==================================================
+            LOVE MESSAGE POPUP
+==================================================*/
+
+setTimeout(()=>{
+
+const popup=document.createElement("div");
+
+popup.innerHTML=`
+
+<div id="lovePopup">
+
+<h2>❤️</h2>
+
+<h3>I Love You</h3>
+
+<p>
+
+Happy Birthday to the most amazing person
+I've ever known.
+
+</p>
+
+<button id="closePopup">
+
+Close ❤️
+
+</button>
+
+</div>
+
+`;
+
+document.body.appendChild(popup);
+
+document
+.getElementById("closePopup")
+.onclick=()=>popup.remove();
+
+},12000);
+
+/*==================================================
+            AUTO HIDE NAVBAR
+==================================================*/
+
+let lastScroll=0;
+
+const nav=document.querySelector("nav");
+
+window.addEventListener("scroll",()=>{
+
+const current=window.pageYOffset;
+
+if(current>lastScroll && current>200){
+
+nav.style.transform="translateY(-100%)";
+
+}else{
+
+nav.style.transform="translateY(0)";
+
+}
+
+lastScroll=current;
+
+});
+
+/*==================================================
+            MUSIC ENDED
+==================================================*/
+
+birthdaySong.addEventListener("ended",()=>{
+
+playMusicBtn.innerHTML=
+
+'<i class="fa-solid fa-rotate-right"></i> Play Again';
+
+playing=false;
+
+});
+
+/*==================================================
+            SMOOTH APPEAR
+==================================================*/
+
+document.querySelectorAll("button").forEach(button=>{
+
+button.addEventListener("mouseenter",()=>{
+
+button.animate([
+
+{
+
+transform:"translateY(0)"
+
+},
+
+{
+
+transform:"translateY(-5px)"
+
+}
+
+],{
+
+duration:250,
+
+fill:"forwards"
+
+});
+
+});
+
+});
+
+/*==================================================
+            RANDOM LOVE QUOTES
+==================================================*/
+
+const quotes=[
+
+"You are my favorite place ❤️",
+
+"My heart smiles because of you ❤️",
+
+"You are my forever ❤️",
+
+"You make every day beautiful ❤️",
+
+"My favorite notification is yours ❤️"
+
+];
+
+setInterval(()=>{
+
+const random=
+
+quotes[Math.floor(Math.random()*quotes.length)];
+
+console.log(random);
+
+},10000);
+
+/*==================================================
+            END
+==================================================*/
+
+console.log(
+
+"%c❤️ Happy Birthday ❤️",
+
+"color:#ff4f8b;font-size:24px;font-weight:bold"
+
+);
+/*==================================================
             END PART 2
 ==================================================*/
