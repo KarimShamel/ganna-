@@ -1,0 +1,1105 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>عيد ميلاد حبيبي الأغلى</title>
+  
+  <!-- خطوط جوجل الفاخرة للغة العربية -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Amiri:ital,wght@0,400;0,700;1,400&family=Cairo:wght@300;400;600;700;900&display=swap" rel="stylesheet">
+  
+  <!-- مكتبة FontAwesome للأيقونات الفاخرة -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+  <style>
+    /* المتغيرات الأساسية للألوان الفاخرة */
+    :root {
+      --bg-gradient: linear-gradient(135deg, #0f050b 0%, #050104 100%);
+      --accent-gold: linear-gradient(135deg, #ffe5be 0%, #dca463 50%, #b37c3b 100%);
+      --gold-solid: #dca463;
+      --glass-bg: rgba(20, 10, 15, 0.65);
+      --glass-border: rgba(220, 164, 99, 0.25);
+      --font-display: 'Amiri', serif;
+      --font-body: 'Cairo', sans-serif;
+    }
+
+    /* التنسيقات العامة */
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      scrollbar-width: thin;
+      scrollbar-color: var(--gold-solid) #0f050b;
+    }
+
+    body {
+      background: var(--bg-gradient);
+      color: #f5eedc;
+      font-family: var(--font-body);
+      min-height: 100vh;
+      overflow-x: hidden;
+      position: relative;
+    }
+
+    /* لوحة التأثيرات الحية (القلوب والشرارات) */
+    #effects-canvas {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      z-index: 1;
+      pointer-events: none;
+    }
+
+    /* شاشة قفل كلمة المرور الفاخرة */
+    #lock-screen {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: radial-gradient(circle, #1a0a14 0%, #050104 100%);
+      z-index: 9999;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      transition: all 1s cubic-bezier(0.7, 0, 0.3, 1);
+    }
+
+    #lock-screen.unlock {
+      opacity: 0;
+      visibility: hidden;
+      transform: scale(1.1);
+    }
+
+    .lock-box {
+      background: var(--glass-bg);
+      border: 1px solid var(--glass-border);
+      backdrop-filter: blur(25px);
+      -webkit-backdrop-filter: blur(25px);
+      padding: 3rem 2rem;
+      border-radius: 24px;
+      text-align: center;
+      width: 90%;
+      max-width: 420px;
+      box-shadow: 0 15px 35px rgba(0,0,0,0.8), 0 0 40px rgba(220, 164, 99, 0.15);
+      border-top: 2px solid rgba(255,229,190,0.4);
+      z-index: 10000;
+    }
+
+    .lock-box i.lock-icon {
+      font-size: 3rem;
+      background: var(--accent-gold);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      margin-bottom: 1.5rem;
+      animation: pulseGold 2s infinite alternate;
+    }
+
+    .lock-box h2 {
+      font-family: var(--font-display);
+      font-size: 2rem;
+      margin-bottom: 1rem;
+      background: var(--accent-gold);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .lock-box p {
+      font-size: 0.9rem;
+      color: #c4b4a3;
+      margin-bottom: 2rem;
+    }
+
+    .input-wrapper {
+      position: relative;
+      margin-bottom: 1.5rem;
+    }
+
+    .lock-box input {
+      width: 100%;
+      padding: 1rem;
+      border-radius: 12px;
+      border: 1px solid var(--glass-border);
+      background: rgba(255,255,255,0.05);
+      color: #fff;
+      font-size: 1.2rem;
+      text-align: center;
+      letter-spacing: 6px;
+      outline: none;
+      transition: all 0.3s ease;
+    }
+
+    .lock-box input:focus {
+      border-color: var(--gold-solid);
+      box-shadow: 0 0 15px rgba(220, 164, 99, 0.4);
+      background: rgba(255,255,255,0.08);
+    }
+
+    .lock-box button {
+      width: 100%;
+      padding: 1rem;
+      border-radius: 12px;
+      border: none;
+      background: var(--accent-gold);
+      color: #050104;
+      font-weight: 700;
+      font-size: 1.1rem;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      box-shadow: 0 5px 15px rgba(220,164,99,0.3);
+    }
+
+    .lock-box button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 25px rgba(220,164,99,0.5);
+    }
+
+    #error-msg {
+      color: #ff6b6b;
+      font-size: 0.85rem;
+      margin-top: 0.8rem;
+      display: none;
+    }
+
+    /* تأثير الاهتزاز عند الخطأ */
+    @keyframes shake {
+      0%, 100% { transform: translateX(0); }
+      20%, 60% { transform: translateX(-10px); }
+      40%, 80% { transform: translateX(10px); }
+    }
+    .shake {
+      animation: shake 0.4s ease-in-out;
+    }
+
+    @keyframes pulseGold {
+      0% { transform: scale(1); filter: drop-shadow(0 0 2px rgba(220,164,99,0.2)); }
+      100% { transform: scale(1.08); filter: drop-shadow(0 0 15px rgba(220,164,99,0.6)); }
+    }
+
+    /* محتويات الصفحة الأساسية */
+    #main-wrapper {
+      position: relative;
+      z-index: 5;
+      padding-bottom: 120px; /* مسافة من أجل مشغل الموسيقى المثبت بالأسفل */
+      opacity: 0;
+      transform: translateY(30px);
+      transition: all 1.5s cubic-bezier(0.2, 1, 0.2, 1);
+    }
+
+    #main-wrapper.show {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* الهيدر الترحيبي */
+    header {
+      text-align: center;
+      padding: 5rem 1rem 2rem 1rem;
+    }
+
+    header h1 {
+      font-family: var(--font-display);
+      font-size: 3rem;
+      background: var(--accent-gold);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      margin-bottom: 0.5rem;
+    }
+
+    header p {
+      font-size: 1rem;
+      letter-spacing: 2px;
+      color: #c4b4a3;
+    }
+
+    /* الحاوية الرئيسية للمحتوى */
+    .container {
+      max-width: 1000px;
+      margin: 0 auto;
+      padding: 0 1.5rem;
+    }
+
+    /* صندوق رسالة الحب */
+    .love-letter-section {
+      margin-bottom: 5rem;
+    }
+
+    .letter-card {
+      background: var(--glass-bg);
+      border: 1px solid var(--glass-border);
+      backdrop-filter: blur(15px);
+      -webkit-backdrop-filter: blur(15px);
+      padding: 3.5rem 2.5rem;
+      border-radius: 30px;
+      box-shadow: 0 10px 40px rgba(0,0,0,0.6);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .letter-card::before {
+      content: '"';
+      position: absolute;
+      top: 10px;
+      right: 30px;
+      font-size: 10rem;
+      font-family: var(--font-display);
+      color: rgba(220, 164, 99, 0.08);
+      line-height: 1;
+    }
+
+    .letter-card h3 {
+      font-family: var(--font-display);
+      font-size: 2.2rem;
+      background: var(--accent-gold);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      margin-bottom: 2rem;
+      text-align: center;
+      position: relative;
+    }
+
+    .letter-card h3::after {
+      content: '';
+      display: block;
+      width: 80px;
+      height: 2px;
+      background: var(--accent-gold);
+      margin: 0.5rem auto 0 auto;
+      border-radius: 2px;
+    }
+
+    .letter-text {
+      font-size: 1.15rem;
+      line-height: 2.2;
+      color: #fdfaf2;
+      text-align: justify;
+      white-space: pre-line;
+      font-weight: 300;
+    }
+
+    /* معرض الصور التفاعلي (9 صور) */
+    .gallery-section {
+      margin-bottom: 5rem;
+    }
+
+    .section-title {
+      text-align: center;
+      font-family: var(--font-display);
+      font-size: 2.5rem;
+      background: var(--accent-gold);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      margin-bottom: 3rem;
+    }
+
+    .photo-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1.5rem;
+    }
+
+    @media (max-width: 768px) {
+      .photo-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+    @media (max-width: 480px) {
+      .photo-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    /* إطارات الصور الفاخرة */
+    .photo-frame {
+      background: var(--glass-bg);
+      border: 1px solid var(--glass-border);
+      border-radius: 16px;
+      padding: 0.8rem;
+      aspect-ratio: 1 / 1;
+      position: relative;
+      overflow: hidden;
+      cursor: pointer;
+      box-shadow: 0 8px 25px rgba(0,0,0,0.5);
+      transition: all 0.4s ease;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .photo-frame::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      border: 1px dashed rgba(220,164,99,0.4);
+      border-radius: 12px;
+      pointer-events: none;
+      margin: 4px;
+    }
+
+    .photo-frame:hover {
+      transform: translateY(-8px) scale(1.02);
+      border-color: var(--gold-solid);
+      box-shadow: 0 12px 30px rgba(220,164,99,0.25);
+    }
+
+    .photo-frame img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      border-radius: 10px;
+      display: none;
+    }
+
+    .photo-placeholder {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      color: #c4b4a3;
+      text-align: center;
+      gap: 10px;
+      position: absolute;
+      inset: 0;
+      padding: 1rem;
+    }
+
+    .photo-placeholder i {
+      font-size: 2rem;
+      color: var(--gold-solid);
+    }
+
+    .photo-placeholder span {
+      font-size: 0.8rem;
+      opacity: 0.8;
+    }
+
+    .photo-frame input[type="file"] {
+      display: none;
+    }
+
+    /* شبكة بطاقات "أشياء أحبها فيك" */
+    .reasons-section {
+      margin-bottom: 5rem;
+    }
+
+    .reasons-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 1.5rem;
+    }
+
+    @media (max-width: 768px) {
+      .reasons-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .reason-card {
+      background: var(--glass-bg);
+      border: 1px solid var(--glass-border);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      padding: 1.8rem;
+      border-radius: 20px;
+      display: flex;
+      align-items: center;
+      gap: 1.2rem;
+      box-shadow: 0 6px 20px rgba(0,0,0,0.4);
+      transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+
+    .reason-card:hover {
+      transform: scale(1.03) translateY(-4px);
+      border-color: var(--gold-solid);
+      background: rgba(35, 18, 28, 0.8);
+      box-shadow: 0 10px 25px rgba(220,164,99,0.2);
+    }
+
+    /* جعل الكرت رقم 20 (الأخير) يمتد بعرض الصفحة وبتصميم مميز للغاية */
+    .reason-card.special-card {
+      grid-column: 1 / -1;
+      background: linear-gradient(135deg, rgba(30,12,22,0.85) 0%, rgba(15,5,11,0.85) 100%);
+      border: 1px solid var(--gold-solid);
+      box-shadow: 0 10px 30px rgba(220,164,99,0.15);
+      position: relative;
+    }
+
+    .reason-card.special-card i {
+      color: #ff4757;
+      animation: pulseHeart 1.2s infinite;
+    }
+
+    @keyframes pulseHeart {
+      0% { transform: scale(1); }
+      50% { transform: scale(1.2); }
+      100% { transform: scale(1); }
+    }
+
+    .reason-icon {
+      background: rgba(220, 164, 99, 0.1);
+      color: var(--gold-solid);
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-size: 1.2rem;
+      flex-shrink: 0;
+      border: 1px solid rgba(220, 164, 99, 0.2);
+      transition: all 0.3s ease;
+    }
+
+    .reason-card:hover .reason-icon {
+      background: var(--accent-gold);
+      color: #050104;
+    }
+
+    .reason-text {
+      font-size: 1.05rem;
+      line-height: 1.6;
+      font-weight: 400;
+    }
+
+    /* مشغل الموسيقى الفاخر في الأسفل */
+    .music-player-container {
+      position: fixed;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 90%;
+      max-width: 550px;
+      background: var(--glass-bg);
+      border: 1px solid var(--glass-border);
+      border-top: 1px solid rgba(255,229,190,0.3);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border-radius: 50px;
+      padding: 0.8rem 1.5rem;
+      box-shadow: 0 15px 40px rgba(0,0,0,0.9), 0 0 25px rgba(220,164,99,0.15);
+      z-index: 1000;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+    }
+
+    .player-album-art {
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      background: var(--accent-gold);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      box-shadow: 0 0 10px rgba(220,164,99,0.4);
+      position: relative;
+      animation: spin 8s linear infinite;
+      animation-play-state: paused;
+    }
+
+    .player-album-art.playing {
+      animation-play-state: running;
+    }
+
+    .player-album-art i {
+      color: #050104;
+      font-size: 1.2rem;
+    }
+
+    @keyframes spin {
+      100% { transform: rotate(360deg); }
+    }
+
+    .player-details {
+      flex: 1;
+    }
+
+    .player-title {
+      font-size: 0.95rem;
+      font-weight: 700;
+      margin-bottom: 2px;
+      color: #fff;
+    }
+
+    .player-subtitle {
+      font-size: 0.75rem;
+      color: var(--gold-solid);
+    }
+
+    .player-controls {
+      display: flex;
+      align-items: center;
+      gap: 0.8rem;
+    }
+
+    .play-btn {
+      width: 42px;
+      height: 42px;
+      border-radius: 50%;
+      background: var(--accent-gold);
+      color: #050104;
+      border: none;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      cursor: pointer;
+      font-size: 1rem;
+      box-shadow: 0 3px 10px rgba(220,164,99,0.3);
+      transition: all 0.2s ease;
+    }
+
+    .play-btn:hover {
+      transform: scale(1.08);
+    }
+
+    .progress-bar-container {
+      width: 100px;
+      height: 4px;
+      background: rgba(255,255,255,0.1);
+      border-radius: 2px;
+      position: relative;
+      cursor: pointer;
+    }
+
+    @media (max-width: 480px) {
+      .progress-bar-container {
+        display: none;
+      }
+    }
+
+    .progress-fill {
+      width: 0%;
+      height: 100%;
+      background: var(--gold-solid);
+      border-radius: 2px;
+      transition: width 0.1s linear;
+    }
+
+    /* تلميحة للمستخدم تحت مشغل الموسيقى */
+    .player-hint {
+      position: absolute;
+      top: -30px;
+      left: 50%;
+      transform: translateX(-50%);
+      font-size: 0.7rem;
+      color: var(--gold-solid);
+      background: rgba(0,0,0,0.6);
+      padding: 3px 12px;
+      border-radius: 10px;
+      white-space: nowrap;
+      pointer-events: none;
+      border: 1px solid rgba(220, 164, 99, 0.2);
+    }
+  </style>
+</head>
+<body>
+
+  <!-- لوحة تفاعلية للقلوب والشرارات -->
+  <canvas id="effects-canvas"></canvas>
+
+  <!-- شاشة قفل كلمة المرور -->
+  <div id="lock-screen">
+    <div class="lock-box" id="lock-box">
+      <i class="fa-solid fa-heart-pulse lock-icon"></i>
+      <h2>لحظة حب سرية</h2>
+      <p>الرجاء كتابة رمز الأمان الخاص بيومنا المميز لتصفح عالمنا الخاص</p>
+      
+      <div class="input-wrapper">
+        <input type="password" id="password-input" placeholder="••••••" maxlength="6" autofocus>
+        <div id="error-msg">الرمز غير صحيح، حاول ثانية يا حبيبي ❤</div>
+      </div>
+      
+      <button onclick="verifyPassword()">افتح قلبي</button>
+    </div>
+  </div>
+
+  <!-- محتويات الموقع الأساسي -->
+  <div id="main-wrapper">
+    <header>
+      <h1>كل عام وأنت حبيبي</h1>
+      <p>بمناسبة عيد ميلادك المميز</p>
+    </header>
+
+    <main class="container">
+      
+      <!-- رسالة الحب الافتتاحية -->
+      <section class="love-letter-section">
+        <div class="letter-card">
+          <h3>إليك يا مالك قلبي...</h3>
+          <div class="letter-text">حسيت إن أقل حاجة أقدر أعملها هي إني أعمل حاجه زي دي و حقيقي كل حاجه قليله عليك و قليله على اللي عملته علشاني و لسه بتعمله و اللي هتعمله لسه طول ما احنا سوا و مع بعض .
+عارف؟ أنا ساعات بقعد أفكر في نعمة وجودك بالنسبالي وأكتشفت قد ايه إني محظوظة بيك أكتر ما كنت متخيلة محظوظة بإنسان حنين، وجدع، وسند، يعرف يحتوي ويهون عليا أصعب الأيام و يكون كل حاجه ليا .
+يمكن الدنيا مش دايمًا سهلة، ويمكن مرينا بأيام حلوة وأيام صعبة، لكن في كل مرة كنت ببص فيها ليك كنت بعرف إن انت دايماً الاختيار الصح ليا و اكتر اختيار مناسب و اكتر حاجه صح موجوده في حياتي . لأنك كنت دايمًا الشخص اللي يختار يقرب، مش يبعد .
+يمكن مش بعرف كل مرة اوصفلك قد إيه أنا بحبك ، بس الحقيقة إن الحب للي جوايا أكبر من أي كلام . مفيش موقف موقفتش فيه جمبي ، وكل مرة كنت بتطمني و كل مرة كنت بتشجعني وأنا فاقدة الثقة وكل مرة كنت بتختارني حتى وأنا مش شايفة نفسي مستاهلة الاختيار.
+يمكن محدش بيشوف كل التفاصيل اللي بينا و محدش عارفك زي ما أنا عارفاك ولا حد شايف نسخه منك معينه غيري..بس أنا شوفت كل ده .
+شوفت المواقف اللي أثبتتلي إنك راجل يعتمد عليه.
+وشوفت خوفك عليا، وفرحتك لفرحي وزعلك لزعلي.
+وشوفت حب منك مش بس كلام لا كان كله افعال، شوفت كل حاجه جميله منك والله و كميه حب و حنيه .
+نفسي اقولك دايما شكراً ، شكراً لقلبك اللي عمره ما اتأخر عني بالمشاعر، شكراً علي الحب والاحترام اللي قدمتهولي، شكراً انك كنت دايماً عايزني احسن و اقوى دايماً ، شكراً لكل حاجه حلوه انت عملتها علشاني و لسه هتعملها حقيقي من كل قلبي .
+انت حبيبي و صاحب عمري كله والله، انا دايما فخوره بيك وهفضل فخوره بيك في كل حاجه .
+كل سنه وانت طيب يا حبيبي ، كل سنة وأنت اهم حاجه عندي و اغلى حاجه بالنسبالي ، وأجمل صاحب، وأجمل مستقبل حقيقي بتمنى نعيشه و نرسمه احنا الاتنين سوا .
+وربنا يديمك في حياتي، ويديم بينا الضحكه ، والعشرة الحلوة، والحب اللي كل يوم بيكبر أكتر من اليوم اللي قبله و تفضل انت حبيبي و الامان الوحيد ليا و كل حاجه ليا موجوده . 
+وهي امنيه واحدة بتمني تتكرر كل سنة، هي إننا نفضل دايمًا إيد في إيد، مهما اتغيرت الدنيا حوالينا، ومهما كبرت المسؤوليات، يفضل حبنا هو اللي بيرجعنا تاني لبعض ، والعُمر يعدي واحنا بنفس الشغف ونفس الموده ، واني أفضل دايمًا الشخص اللي يريح قلبك زي ما أنت ريحت قلبي، وأكون بيتك الآمن، وسندك, وفرحتك، زي ما أنت كنت ليا.</div>
+        </div>
+      </section>
+
+      <!-- معرض الـ 9 صور الفاخر -->
+      <section class="gallery-section">
+        <h2 class="section-title"><i class="fa-solid fa-images"></i> معرض ذكرياتنا الـ 9</h2>
+        <div class="photo-grid">
+          
+          <!-- المربعات المبرمجة ديناميكياً للبحث عن الملفات ذات التسمية img1 إلى img9 -->
+          <div class="photo-frame" onclick="triggerUpload(1)" id="frame-1">
+            <div class="photo-placeholder" id="placeholder-1">
+              <i class="fa-regular fa-image"></i>
+              <span>اضغط لإضافة الصورة 1</span>
+            </div>
+            <img id="img-1" src="img1.jpg" alt="حبيبي" onload="onImgLoad(1)" onerror="onImgError(1)">
+            <input type="file" id="file-1" accept="image/*" onchange="handleImage(event, 1)">
+          </div>
+
+          <div class="photo-frame" onclick="triggerUpload(2)" id="frame-2">
+            <div class="photo-placeholder" id="placeholder-2">
+              <i class="fa-regular fa-image"></i>
+              <span>اضغط لإضافة الصورة 2</span>
+            </div>
+            <img id="img-2" src="img2.jpg" alt="حبيبي" onload="onImgLoad(2)" onerror="onImgError(2)">
+            <input type="file" id="file-2" accept="image/*" onchange="handleImage(event, 2)">
+          </div>
+
+          <div class="photo-frame" onclick="triggerUpload(3)" id="frame-3">
+            <div class="photo-placeholder" id="placeholder-3">
+              <i class="fa-regular fa-image"></i>
+              <span>اضغط لإضافة الصورة 3</span>
+            </div>
+            <img id="img-3" src="img3.jpg" alt="حبيبي" onload="onImgLoad(3)" onerror="onImgError(3)">
+            <input type="file" id="file-3" accept="image/*" onchange="handleImage(event, 3)">
+          </div>
+
+          <div class="photo-frame" onclick="triggerUpload(4)" id="frame-4">
+            <div class="photo-placeholder" id="placeholder-4">
+              <i class="fa-regular fa-image"></i>
+              <span>اضغط لإضافة الصورة 4</span>
+            </div>
+            <img id="img-4" src="img4.jpg" alt="حبيبي" onload="onImgLoad(4)" onerror="onImgError(4)">
+            <input type="file" id="file-4" accept="image/*" onchange="handleImage(event, 4)">
+          </div>
+
+          <div class="photo-frame" onclick="triggerUpload(5)" id="frame-5">
+            <div class="photo-placeholder" id="placeholder-5">
+              <i class="fa-regular fa-image"></i>
+              <span>اضغط لإضافة الصورة 5</span>
+            </div>
+            <img id="img-5" src="img5.jpg" alt="حبيبي" onload="onImgLoad(5)" onerror="onImgError(5)">
+            <input type="file" id="file-5" accept="image/*" onchange="handleImage(event, 5)">
+          </div>
+
+          <div class="photo-frame" onclick="triggerUpload(6)" id="frame-6">
+            <div class="photo-placeholder" id="placeholder-6">
+              <i class="fa-regular fa-image"></i>
+              <span>اضغط لإضافة الصورة 6</span>
+            </div>
+            <img id="img-6" src="img6.jpg" alt="حبيبي" onload="onImgLoad(6)" onerror="onImgError(6)">
+            <input type="file" id="file-6" accept="image/*" onchange="handleImage(event, 6)">
+          </div>
+
+          <div class="photo-frame" onclick="triggerUpload(7)" id="frame-7">
+            <div class="photo-placeholder" id="placeholder-7">
+              <i class="fa-regular fa-image"></i>
+              <span>اضغط لإضافة الصورة 7</span>
+            </div>
+            <img id="img-7" src="img7.jpg" alt="حبيبي" onload="onImgLoad(7)" onerror="onImgError(7)">
+            <input type="file" id="file-7" accept="image/*" onchange="handleImage(event, 7)">
+          </div>
+
+          <div class="photo-frame" onclick="triggerUpload(8)" id="frame-8">
+            <div class="photo-placeholder" id="placeholder-8">
+              <i class="fa-regular fa-image"></i>
+              <span>اضغط لإضافة الصورة 8</span>
+            </div>
+            <img id="img-8" src="img8.jpg" alt="حبيبي" onload="onImgLoad(8)" onerror="onImgError(8)">
+            <input type="file" id="file-8" accept="image/*" onchange="handleImage(event, 8)">
+          </div>
+
+          <div class="photo-frame" onclick="triggerUpload(9)" id="frame-9">
+            <div class="photo-placeholder" id="placeholder-9">
+              <i class="fa-regular fa-image"></i>
+              <span>اضغط لإضافة الصورة 9</span>
+            </div>
+            <img id="img-9" src="img9.jpg" alt="حبيبي" onload="onImgLoad(9)" onerror="onImgError(9)">
+            <input type="file" id="file-9" accept="image/*" onchange="handleImage(event, 9)">
+          </div>
+        </div>
+      </section>
+
+      <!-- أشياء أحبها فيك -->
+      <section class="reasons-section">
+        <h2 class="section-title"><i class="fa-solid fa-heart"></i> تفاصيل أحبها فيك</h2>
+        <div class="reasons-grid">
+          <div class="reason-card">
+            <div class="reason-icon"><i class="fa-solid fa-dove"></i></div>
+            <div class="reason-text">حنيتك معايا.</div>
+          </div>
+          <div class="reason-card">
+            <div class="reason-icon"><i class="fa-solid fa-magnifying-glass"></i></div>
+            <div class="reason-text">طريقتك في الاهتمام بالتفاصيل الصغيرة.</div>
+          </div>
+          <div class="reason-card">
+            <div class="reason-icon"><i class="fa-solid fa-shield-halved"></i></div>
+            <div class="reason-text">إنك بتخليني أحس بالأمان.</div>
+          </div>
+          <div class="reason-card">
+            <div class="reason-icon"><i class="fa-solid fa-face-smile-wink"></i></div>
+            <div class="reason-text">ضحكتك.</div>
+          </div>
+          <div class="reason-card">
+            <div class="reason-icon"><i class="fa-solid fa-music"></i></div>
+            <div class="reason-text">صوتك.</div>
+          </div>
+          <div class="reason-card">
+            <div class="reason-icon"><i class="fa-solid fa-hand-holding-heart"></i></div>
+            <div class="reason-text">طيبة قلبك.</div>
+          </div>
+          <div class="reason-card">
+            <div class="reason-icon"><i class="fa-solid fa-ear-listen"></i></div>
+            <div class="reason-text">إنك دايمًا بتسمعني.</div>
+          </div>
+          <div class="reason-card">
+            <div class="reason-icon"><i class="fa-solid fa-hourglass-half"></i></div>
+            <div class="reason-text">صبرك عليا.</div>
+          </div>
+          <div class="reason-card">
+            <div class="reason-icon"><i class="fa-solid fa-hands-holding"></i></div>
+            <div class="reason-text">طريقتك في احتوائي وقت زعلي.</div>
+          </div>
+          <div class="reason-card">
+            <div class="reason-icon"><i class="fa-solid fa-sun"></i></div>
+            <div class="reason-text">وجودك اللي بيهون أي يوم صعب.</div>
+          </div>
+          <div class="reason-card">
+            <div class="reason-icon"><i class="fa-solid fa-arrow-up-right-dots"></i></div>
+            <div class="reason-text">إنك بتشجعني أبقى أحسن.</div>
+          </div>
+          <div class="reason-card">
+            <div class="reason-icon"><i class="fa-solid fa-face-laugh-beam"></i></div>
+            <div class="reason-text">خفة دمك.</div>
+          </div>
+          <div class="reason-card">
+            <div class="reason-icon"><i class="fa-solid fa-sparkles"></i></div>
+            <div class="reason-text">عفويتك.</div>
+          </div>
+          <div class="reason-card">
+            <div class="reason-icon"><i class="fa-solid fa-eye"></i></div>
+            <div class="reason-text">نظرتك ليا.</div>
+          </div>
+          <div class="reason-card">
+            <div class="reason-icon"><i class="fa-solid fa-crown"></i></div>
+            <div class="reason-text">احترامك ليا.</div>
+          </div>
+          <div class="reason-card">
+            <div class="reason-icon"><i class="fa-solid fa-brain"></i></div>
+            <div class="reason-text">إنك بتفتكر الحاجات اللي بقولها.</div>
+          </div>
+          <div class="reason-card">
+            <div class="reason-icon"><i class="fa-solid fa-gem"></i></div>
+            <div class="reason-text">طموحك.</div>
+          </div>
+          <div class="reason-card">
+            <div class="reason-icon"><i class="fa-solid fa-feather"></i></div>
+            <div class="reason-text">إحساسي بالراحة وأنا بكلمك.</div>
+          </div>
+          <div class="reason-card">
+            <div class="reason-icon"><i class="fa-solid fa-infinity"></i></div>
+            <div class="reason-text">إنك بقيت جزء مهم من كل يوم في حياتي.</div>
+          </div>
+          <!-- الكرت الأخير المميز -->
+          <div class="reason-card special-card">
+            <div class="reason-icon"><i class="fa-solid fa-heart-pulse"></i></div>
+            <div class="reason-text">وأكتر حاجة بحبها فيك… إنك أنت، بكل تفاصيلك اللي خلتني أحبك بالشكل ده</div>
+          </div>
+        </div>
+      </section>
+
+    </main>
+
+    <!-- مشغل الموسيقى المثبت بالأسفل مع الأغنية المخصصة ganna.mp3 -->
+    <div class="music-player-container">
+      <div class="player-hint">اضغطي للتحكم في الأغنية أو إيقافها مؤقتاً ❤</div>
+      <div class="player-album-art" id="album-art">
+        <i class="fa-solid fa-compact-disc"></i>
+      </div>
+      <div class="player-details">
+        <div class="player-title">أغنيتنا: جَنَّة</div>
+        <div class="player-subtitle">لحن حبنا المخصص</div>
+      </div>
+      <div class="player-controls">
+        <div class="progress-bar-container" id="progress-container" onclick="setProgress(event)">
+          <div class="progress-fill" id="progress-fill"></div>
+        </div>
+        <button class="play-btn" onclick="togglePlay()"><i class="fa-solid fa-play" id="play-icon"></i></button>
+      </div>
+      <!-- ملف الأغنية المخصصة -->
+      <audio id="bg-audio" loop>
+        <source src="ganna.mp3" type="audio/mpeg">
+      </audio>
+    </div>
+  </div>
+
+  <script>
+    /* =========================================
+       1. منطق التحقق من كلمة السر وبدء التشغيل التلقائي
+       ========================================= */
+    const correctPassword = "882006";
+
+    document.getElementById('password-input').addEventListener('keypress', function(e) {
+      if (e.key === 'Enter') {
+        verifyPassword();
+      }
+    });
+
+    function verifyPassword() {
+      const input = document.getElementById('password-input').value;
+      const lockBox = document.getElementById('lock-box');
+      const errorMsg = document.getElementById('error-msg');
+
+      if (input === correctPassword) {
+        document.getElementById('lock-screen').classList.add('unlock');
+        document.getElementById('main-wrapper').classList.add('show');
+        
+        // تشغيل أغنية ganna.mp3 فوراً بعد تفعيل إيماءة الضغط على زر فتح القفل
+        setTimeout(() => {
+          playAudio();
+        }, 800);
+      } else {
+        lockBox.classList.add('shake');
+        errorMsg.style.display = 'block';
+        setTimeout(() => {
+          lockBox.classList.remove('shake');
+        }, 400);
+      }
+    }
+
+    /* =========================================
+       2. منطق مشغل الموسيقى التفاعلي
+       ========================================= */
+    const audio = document.getElementById('bg-audio');
+    const playIcon = document.getElementById('play-icon');
+    const albumArt = document.getElementById('album-art');
+    const progressFill = document.getElementById('progress-fill');
+    const progressContainer = document.getElementById('progress-container');
+
+    function togglePlay() {
+      if (audio.paused) {
+        playAudio();
+      } else {
+        pauseAudio();
+      }
+    }
+
+    function playAudio() {
+      audio.play().then(() => {
+        playIcon.className = "fa-solid fa-pause";
+        albumArt.classList.add('playing');
+      }).catch(err => {
+        console.log("تعذر التشغيل التلقائي بسبب إعدادات حماية المتصفح، سيبدأ التشغيل عند أول تفاعل رسمي:", err);
+      });
+    }
+
+    function pauseAudio() {
+      audio.pause();
+      playIcon.className = "fa-solid fa-play";
+      albumArt.classList.remove('playing');
+    }
+
+    audio.addEventListener('timeupdate', () => {
+      if (audio.duration) {
+        const progressPercent = (audio.currentTime / audio.duration) * 100;
+        progressFill.style.width = `${progressPercent}%`;
+      }
+    });
+
+    function setProgress(e) {
+      const width = progressContainer.clientWidth;
+      const clickX = e.offsetX;
+      const duration = audio.duration;
+      if(duration) {
+        audio.currentTime = (clickX / width) * duration;
+      }
+    }
+
+    /* =========================================
+       3. نظام إدارة وعرض الـ 9 صور
+       ========================================= */
+    function onImgLoad(id) {
+      document.getElementById(`img-${id}`).style.display = 'block';
+      document.getElementById(`placeholder-${id}`).style.display = 'none';
+    }
+
+    function onImgError(id) {
+      const savedImg = localStorage.getItem(`bf_birthday_img_${id}`);
+      if (!savedImg) {
+        document.getElementById(`img-${id}`).style.display = 'none';
+        document.getElementById(`placeholder-${id}`).style.display = 'flex';
+      }
+    }
+
+    function triggerUpload(id) {
+      document.getElementById(`file-${id}`).click();
+    }
+
+    function handleImage(event, id) {
+      const file = event.target.files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+          const base64Img = e.target.result;
+          localStorage.setItem(`bf_birthday_img_${id}`, base64Img);
+          displaySavedImage(id, base64Img);
+        };
+        reader.readAsDataURL(file);
+      }
+    }
+
+    function displaySavedImage(id, src) {
+      const img = document.getElementById(`img-${id}`);
+      const placeholder = document.getElementById(`placeholder-${id}`);
+      img.src = src;
+      img.style.display = 'block';
+      placeholder.style.display = 'none';
+    }
+
+    window.addEventListener('load', () => {
+      for(let i = 1; i <= 9; i++) {
+        const savedImg = localStorage.getItem(`bf_birthday_img_${i}`);
+        if(savedImg) {
+          displaySavedImage(i, savedImg);
+        }
+      }
+    });
+
+    /* =========================================
+       4. محاكاة القلوب والشرارات التفاعلية (Canvas)
+       ========================================= */
+    const canvas = document.getElementById('effects-canvas');
+    const ctx = canvas.getContext('2d');
+
+    let particles = [];
+
+    function resizeCanvas() {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+    }
+    window.addEventListener('resize', resizeCanvas);
+    resizeCanvas();
+
+    class Heart {
+      constructor() {
+        this.reset();
+        this.y = Math.random() * canvas.height;
+      }
+
+      reset() {
+        this.x = Math.random() * canvas.width;
+        this.y = canvas.height + 20;
+        this.size = Math.random() * 8 + 6;
+        this.speedY = -(Math.random() * 0.8 + 0.4);
+        this.speedX = Math.sin(Math.random() * 10) * 0.3;
+        this.opacity = Math.random() * 0.5 + 0.3;
+        this.angle = Math.random() * Math.PI;
+      }
+
+      update() {
+        this.y += this.speedY;
+        this.x += this.speedX;
+        this.angle += 0.01;
+        if (this.y < -20 || this.x < -20 || this.x > canvas.width + 20) {
+          this.reset();
+        }
+      }
+
+      draw() {
+        ctx.save();
+        ctx.translate(this.x, this.y);
+        ctx.rotate(Math.sin(this.angle) * 0.2);
+        ctx.beginPath();
+        ctx.moveTo(0, 0);
+        ctx.bezierCurveTo(-this.size/2, -this.size/2, -this.size, 0, -this.size, this.size/1.5);
+        ctx.bezierCurveTo(-this.size, this.size*1.3, -this.size/4, this.size*1.8, 0, this.size*2.2);
+        ctx.bezierCurveTo(this.size/4, this.size*1.8, this.size, this.size*1.3, this.size, this.size/1.5);
+        ctx.bezierCurveTo(this.size, 0, this.size/2, -this.size/2, 0, 0);
+        ctx.closePath();
+        ctx.fillStyle = `rgba(255, 255, 255, ${this.opacity})`;
+        ctx.shadowBlur = 5;
+        ctx.shadowColor = 'rgba(255, 255, 255, 0.3)';
+        ctx.fill();
+        ctx.restore();
+      }
+    }
+
+    class Spark {
+      constructor() {
+        this.reset();
+        this.y = Math.random() * canvas.height;
+      }
+
+      reset() {
+        this.x = Math.random() * canvas.width;
+        this.y = Math.random() * canvas.height;
+        this.size = Math.random() * 2 + 0.5;
+        this.alpha = Math.random() * 0.6 + 0.2;
+        this.blinkSpeed = Math.random() * 0.02 + 0.005;
+        this.driftX = (Math.random() - 0.5) * 0.2;
+        this.driftY = (Math.random() - 0.5) * 0.2;
+      }
+
+      update() {
+        this.alpha += this.blinkSpeed;
+        this.x += this.driftX;
+        this.y += this.driftY;
+        if (this.alpha > 0.8 || this.alpha < 0.1) {
+          this.blinkSpeed = -this.blinkSpeed;
+        }
+        if (this.x < 0 || this.x > canvas.width || this.y < 0 || this.y > canvas.height) {
+          this.reset();
+        }
+      }
+
+      draw() {
+        ctx.save();
+        ctx.beginPath();
+        ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+        ctx.fillStyle = `rgba(255, 229, 190, ${this.alpha})`;
+        ctx.shadowBlur = 8;
+        ctx.shadowColor = 'rgba(220, 164, 99, 0.8)';
+        ctx.fill();
+        ctx.restore();
+      }
+    }
+
+    function initEffects() {
+      for (let i = 0; i < 40; i++) {
+        particles.push(new Heart());
+      }
+      for (let i = 0; i < 60; i++) {
+        particles.push(new Spark());
+      }
+    }
+
+    function animate() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      particles.forEach(p => {
+        p.update();
+        p.draw();
+      });
+      requestAnimationFrame(animate);
+    }
+
+    initEffects();
+    animate();
+  </script>
+</body>
+</html>
